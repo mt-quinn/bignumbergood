@@ -14,11 +14,26 @@ export function Playfield() {
   })();
 
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+  const [isLg, setIsLg] = useState(false);
+  useEffect(() => {
+    function checkBp() {
+      setIsLg(window.innerWidth >= 1024);
+    }
+    checkBp();
+    window.addEventListener("resize", checkBp);
+    return () => window.removeEventListener("resize", checkBp);
+  }, []);
+
   const desiredAspect = useMemo(() => {
     if (typeof window === "undefined") return 16 / 9;
-    return window.innerWidth >= 1024 ? 16 / 9 : 3 / 4;
+    return 16 / 9;
   }, []);
+
   useEffect(() => {
+    if (!isLg) {
+      setSize(null);
+      return;
+    }
     function update() {
       const padding = 16;
       const headerReserve = 72;
@@ -32,13 +47,13 @@ export function Playfield() {
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
-  }, [desiredAspect]);
+  }, [desiredAspect, isLg]);
 
   return (
-    <div className="mx-auto" style={{ width: size?.width, height: size?.height }}>
-      <div className="h-full w-full rounded-2xl border bg-gradient-to-b from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950 p-2 sm:p-4 overflow-hidden">
+    <div className="mx-auto w-full max-w-[900px]" style={isLg ? { width: size?.width, height: size?.height } : undefined}>
+      <div className={`rounded-2xl border bg-gradient-to-b from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950 p-2 sm:p-4 ${isLg ? "h-full" : ""}`}>
         {/* Mobile: flex column; Desktop: grid */}
-        <div className="h-full w-full flex flex-col lg:grid lg:grid-cols-[240px_1fr_200px] lg:grid-rows-1 gap-2 sm:gap-3 overflow-hidden">
+        <div className={`w-full ${isLg ? "h-full" : ""} flex flex-col lg:grid lg:grid-cols-[240px_1fr_200px] lg:grid-rows-1 gap-2 sm:gap-3 overflow-visible`}>
           {/* Log */}
           <aside className="order-2 lg:order-1 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 overflow-auto min-h-0">
             <div className="text-xs uppercase text-gray-500 mb-2">Log</div>
@@ -65,9 +80,9 @@ export function Playfield() {
           </aside>
 
           {/* Play area */}
-          <main className="order-1 lg:order-2 flex-1 rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col min-h-0 overflow-hidden">
+          <main className="order-1 lg:order-2 flex-1 rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col min-h-0 overflow-visible lg:overflow-hidden">
             <div className="text-xs sm:text-sm text-gray-500 mb-2 text-center lg:text-left">Seed: <span className="font-mono">{daily.seed}</span> — Phase: {phase}</div>
-            <div className="flex-1 min-h-0 overflow-auto">
+            <div className="flex-1 min-h-0 overflow-visible lg:overflow-auto">
               <Crucible />
             </div>
             <div className="mt-2 sm:mt-3 flex gap-2 justify-center">
@@ -91,7 +106,6 @@ export function Playfield() {
           <aside className="order-3 lg:order-3 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0 overflow-auto">
             <div className="text-xs sm:text-sm uppercase text-gray-500 mb-1 sm:mb-2">Gauge</div>
             <div className="w-full">
-              {/* Compact on mobile, full on lg */}
               <div className="block lg:hidden">
                 <Gauge value={finalSoFar} compact />
               </div>
