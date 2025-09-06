@@ -20,11 +20,10 @@ export function Playfield() {
   }, []);
   useEffect(() => {
     function update() {
-      const padding = 24; // outer breathing room
-      const headerReserve = 90; // allow for page title area
+      const padding = 16; // tighter on mobile
+      const headerReserve = 72; // title area
       const availW = Math.max(320, window.innerWidth - padding * 2);
-      const availH = Math.max(320, window.innerHeight - headerReserve - padding * 2);
-      // Fit box of aspect into viewport
+      const availH = Math.max(420, window.innerHeight - headerReserve - padding * 2);
       const widthByHeight = availH * desiredAspect;
       const width = Math.min(availW, widthByHeight, 1200);
       const height = Math.floor(width / desiredAspect);
@@ -37,14 +36,15 @@ export function Playfield() {
 
   return (
     <div className="mx-auto" style={{ width: size?.width, height: size?.height }}>
-      <div className="h-full w-full rounded-2xl border bg-gradient-to-b from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950 p-3 sm:p-5 overflow-hidden">
-        <div className="h-full w-full grid grid-cols-[240px_1fr_200px] gap-3 sm:gap-4 overflow-hidden">
-          {/* Left: Log */}
-          <aside className="h-full rounded-xl border bg-background/40 p-3 overflow-auto min-h-0">
+      <div className="h-full w-full rounded-2xl border bg-gradient-to-b from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950 p-2 sm:p-4 overflow-hidden">
+        {/* Mobile-first single column; switch to 3 columns on lg */}
+        <div className="h-full w-full grid grid-rows-[1fr_auto_auto] lg:grid-rows-1 grid-cols-1 lg:grid-cols-[240px_1fr_200px] gap-2 sm:gap-3 overflow-hidden">
+          {/* Left: Log (mobile order 3) */}
+          <aside className="order-3 lg:order-1 h-full rounded-xl border bg-background/40 p-2 sm:p-3 overflow-auto min-h-0">
             <div className="text-xs uppercase text-gray-500 mb-2">Log</div>
             <section className="mb-4">
               <h2 className="text-xs uppercase text-gray-500 mb-1">Research</h2>
-              <div className="text-sm font-mono space-y-1">
+              <div className="text-xs sm:text-sm font-mono space-y-1">
                 {(phase !== "research" ? researchEval?.steps : liveEval?.steps)?.map((s, i) => (
                   <div key={i}>{s.log}</div>
                 ))}
@@ -52,7 +52,7 @@ export function Playfield() {
             </section>
             <section>
               <h2 className="text-xs uppercase text-gray-500 mb-1">Presentation</h2>
-              <div className="text-sm font-mono space-y-1">
+              <div className="text-xs sm:text-sm font-mono space-y-1">
                 {(phase === "presentation" ? liveEval?.steps : presentationEval?.steps)?.map((s, i) => (
                   <div key={i}>{s.log}</div>
                 ))}
@@ -60,39 +60,39 @@ export function Playfield() {
             </section>
           </aside>
 
-          {/* Center: Play area */}
-          <main className="h-full rounded-xl border bg-background/40 p-3 sm:p-4 flex flex-col min-h-0">
-            <div className="text-sm text-gray-500 mb-2">Seed: <span className="font-mono">{daily.seed}</span> — Phase: {phase}</div>
+          {/* Center: Play area (mobile order 1) */}
+          <main className="order-1 lg:order-2 h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col min-h-0">
+            <div className="text-xs sm:text-sm text-gray-500 mb-2 text-center lg:text-left">Seed: <span className="font-mono">{daily.seed}</span> — Phase: {phase}</div>
             <div className="flex-1 min-h-0">
               <Crucible />
             </div>
             <div className="mt-2 sm:mt-3 flex gap-2 justify-center">
-              <button className="px-3 py-1 rounded border bg-white/60 hover:bg-white transition" onClick={actions.undo}>Undo</button>
+              <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm">Undo</button>
               {phase === "research" && (
-                <button className="px-3 py-1 rounded border bg-white/60 hover:bg-white transition" onClick={actions.finalizeResearch}>Finish Research</button>
+                <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm" onClick={actions.finalizeResearch}>Finish Research</button>
               )}
               {phase === "presentation" && (
-                <button className="px-3 py-1 rounded border bg-white/60 hover:bg-white transition" onClick={actions.finalizePresentation}>Finish Presentation</button>
+                <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm" onClick={actions.finalizePresentation}>Finish Presentation</button>
               )}
               {phase === "done" && (
                 <>
-                  <button className="px-3 py-1 rounded border bg-white/60 hover:bg-white transition" onClick={actions.retrySameIngredients}>Try Again (same)</button>
-                  <button className="px-3 py-1 rounded border bg-white/60 hover:bg-white transition" onClick={actions.retryNewIngredients}>Try Again (new)</button>
+                  <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm" onClick={actions.retrySameIngredients}>Try Again (same)</button>
+                  <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm" onClick={actions.retryNewIngredients}>Try Again (new)</button>
                 </>
               )}
             </div>
           </main>
 
-          {/* Right: Gauge */}
-          <aside className="h-full rounded-xl border bg-background/40 p-3 flex flex-col items-center min-h-0">
-            <div className="text-sm uppercase text-gray-500 mb-2">Gauge</div>
-            <div className="text-2xl font-semibold mb-2">{labelFor(finalSoFar)}</div>
-            <div className="w-full">
+          {/* Right: Gauge (mobile order 2, compact) */}
+          <aside className="order-2 lg:order-3 h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0">
+            <div className="text-xs sm:text-sm uppercase text-gray-500 mb-1 sm:mb-2">Gauge</div>
+            <div className="text-lg sm:text-2xl font-semibold mb-1 sm:mb-2">{labelFor(finalSoFar)}</div>
+            <div className="w-full max-h-40 sm:max-h-none">
               <Gauge value={finalSoFar} />
             </div>
             <div className="mt-auto text-center">
-              <div className="text-xs text-gray-500">Final</div>
-              <div className="font-mono text-lg break-all">{finalSoFar.toString()}</div>
+              <div className="text-[10px] sm:text-xs text-gray-500">Final</div>
+              <div className="font-mono text-base sm:text-lg break-all">{finalSoFar.toString()}</div>
             </div>
           </aside>
         </div>
