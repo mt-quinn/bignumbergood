@@ -21,16 +21,15 @@ export function ShareImage({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const W = 1200;
-    // Fonts: dynamic, bold, all-caps
     const TITLE_TEXT = "www.bignumbergood.com";
-    const TITLE_FONT_SIZE = 56;
     const BODY_FONT_SIZE = 48; // larger, punchier body
-    const titleFont = `800 ${TITLE_FONT_SIZE}px Impact, Haettenschweiler, 'Arial Black', Oswald, system-ui, sans-serif`;
-    const bodyFont = `800 ${BODY_FONT_SIZE}px Impact, Haettenschweiler, 'Arial Black', Oswald, system-ui, sans-serif`;
+    const family = "Impact, Haettenschweiler, 'Arial Black', Oswald, system-ui, sans-serif";
     const sidePad = 64; // horizontal padding
     const gap = 10; // tiny gap between body and title (title now below)
+
+    // Body font setup
+    const bodyFont = `800 ${BODY_FONT_SIZE}px ${family}`;
     const bodyLineHeight = Math.round(BODY_FONT_SIZE * 1.05);
-    const titleLineHeight = Math.round(TITLE_FONT_SIZE * 1.05);
 
     // Measure body lines first to compute exact height; use all-caps for wrapping
     ctx.font = bodyFont;
@@ -38,9 +37,20 @@ export function ShareImage({
     const lines = wrapText(ctx, phraseUpper, W - sidePad * 2);
     const bodyHeight = lines.length * bodyLineHeight;
 
-    // Measure title width for later centering
-    ctx.font = titleFont;
-    const titleWidth = ctx.measureText(TITLE_TEXT).width;
+    // Dynamically determine title font size to fit available width
+    const maxTitleSize = 128;
+    const minTitleSize = 28;
+    let titleSize = maxTitleSize;
+    ctx.font = `800 ${titleSize}px ${family}`;
+    const maxTitleWidth = W - sidePad * 2;
+    const titleUpper = TITLE_TEXT.toUpperCase();
+    while (titleSize > minTitleSize && ctx.measureText(titleUpper).width > maxTitleWidth) {
+      titleSize -= 2;
+      ctx.font = `800 ${titleSize}px ${family}`;
+    }
+    const titleFont = `800 ${titleSize}px ${family}`;
+    const titleLineHeight = Math.round(titleSize * 1.05);
+    const titleWidth = ctx.measureText(titleUpper).width;
 
     // Compute tight canvas height with minimal vertical padding
     const topPad = 20;
@@ -101,10 +111,10 @@ export function ShareImage({
       // Draw title
       ctx3.fillStyle = TITLE_COLOR;
       ctx3.font = titleFont;
-      ctx3.fillText(TITLE_TEXT.toUpperCase(), (W - titleWidth) / 2, y + gap);
+      ctx3.fillText(titleUpper, (W - titleWidth) / 2, y + gap);
       return;
     }
-    ctx2.fillText(TITLE_TEXT.toUpperCase(), (W - titleWidth) / 2, titleY);
+    ctx2.fillText(titleUpper, (W - titleWidth) / 2, titleY);
   }
 
   function handleDownload() {
