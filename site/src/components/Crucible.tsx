@@ -62,18 +62,17 @@ export function Crucible() {
         </div>
       </div>
 
-      {/* Middle: Reimagined Crucible Display */}
-      <div className="flex-1 rounded-xl border bg-background/60 p-2 flex flex-col items-center justify-between min-h-0 text-center">
-        {/* Top part of middle: Total */}
-        <div className="w-full">
+      {/* Middle: Crucible Display (contained) */}
+      <div className="flex-1 rounded-xl border bg-background/60 p-2 flex flex-col min-h-0 overflow-hidden text-center">
+        {/* Reserve space for total to prevent overlap */}
+        <div className="w-full min-h-[3.25rem] sm:min-h-[4rem]">
           <FitNumber value={currentTotal} maxLines={3} />
         </div>
-        
-        {/* Bottom part of middle: Sequence */}
-        <div className="w-full p-2 flex justify-center">
-            <div className="flex flex-wrap items-center justify-center gap-2 max-w-[23rem]">
-                {sequenceDisplay}
-            </div>
+        {/* Sequence area grows and scrolls within the panel */}
+        <div className="flex-1 overflow-auto pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {sequenceDisplay}
+          </div>
         </div>
       </div>
 
