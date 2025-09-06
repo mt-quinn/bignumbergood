@@ -87,8 +87,14 @@ export function Playfield() {
           <aside className="order-2 lg:order-3 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0 overflow-auto">
             <div className="text-xs sm:text-sm uppercase text-gray-500 mb-1 sm:mb-2">Gauge</div>
             <div className="text-lg sm:text-2xl font-semibold mb-1 sm:mb-2">{labelFor(finalSoFar)}</div>
-            <div className="w-full max-h-40 sm:max-h-none">
-              <Gauge value={finalSoFar} />
+            <div className="w-full">
+              {/* Compact on mobile, full on lg */}
+              <div className="block lg:hidden">
+                <Gauge value={finalSoFar} compact />
+              </div>
+              <div className="hidden lg:block">
+                <Gauge value={finalSoFar} />
+              </div>
             </div>
             <div className="mt-auto text-center">
               <div className="text-[10px] sm:text-xs text-gray-500">Final</div>

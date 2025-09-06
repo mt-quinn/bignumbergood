@@ -2,9 +2,19 @@
 import { useMemo } from "react";
 import { GAUGE_LABELS, orderOfMagnitude } from "@/lib/gauge";
 
-export function Gauge({ value }: { value: bigint }) {
+export function Gauge({ value, compact = false }: { value: bigint; compact?: boolean }) {
   const index = useMemo(() => orderOfMagnitude(value), [value]);
   const clamped = Math.min(GAUGE_LABELS.length - 1, index);
+
+  if (compact) {
+    return (
+      <div className="w-full flex items-center justify-center gap-2 py-1">
+        <span className="text-xs text-gray-500">▲</span>
+        <span className="text-sm font-semibold">{GAUGE_LABELS[clamped]}</span>
+      </div>
+    );
+  }
+
   const itemHeight = 40; // px
   const visible = 4; // 3-4 visible at a time
   const offset = Math.max(0, clamped - Math.floor(visible / 2));
