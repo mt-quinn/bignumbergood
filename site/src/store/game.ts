@@ -11,13 +11,13 @@ export type ReagentItem = { id: OperatorId; emoji: string };
 export type GameState = {
   daily: DailyPuzzle;
   phase: Phase;
-  selectionElements: number[]; // remaining elements pool
-  selectionReagents: ReagentItem[]; // remaining reagents pool
-  sequenceElements: number[]; // chosen order length 5
-  sequenceReagents: ReagentItem[]; // chosen order length 4
+  selectionElements: number[];
+  selectionReagents: ReagentItem[];
+  sequenceElements: number[];
+  sequenceReagents: ReagentItem[];
   researchEval?: Evaluation;
   presentationEval?: Evaluation;
-  liveEval?: Evaluation; // live as user builds current sequence
+  liveEval?: Evaluation;
   actions: GameActions;
 };
 
@@ -50,7 +50,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     reset: (seedOverride?: string) => set({ ...initDaily(seedOverride), phase: "research", researchEval: undefined, presentationEval: undefined, liveEval: undefined }),
     addElement: (value: number) => {
       const s = get();
-      if (s.selectionElements.includes(value) && s.sequenceElements.length < 5) {
+      // Grammar: must place an element when counts are equal (E R E R E R E R E)
+      const canPlace = s.sequenceElements.length === s.sequenceReagents.length && s.sequenceElements.length < 5;
+      if (canPlace && s.selectionElements.includes(value)) {
         const idx = s.selectionElements.indexOf(value);
         const nextSel = s.selectionElements.slice();
         nextSel.splice(idx, 1);
@@ -61,8 +63,10 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
     addReagent: (id: OperatorId, emoji: string) => {
       const s = get();
+      // Grammar: must place a reagent when there is exactly one more element than reagents
+      const canPlace = s.sequenceElements.length === s.sequenceReagents.length + 1 && s.sequenceReagents.length < 4;
       const index = s.selectionReagents.findIndex((r) => r.id === id && r.emoji === emoji);
-      if (index >= 0 && s.sequenceReagents.length < 4) {
+      if (canPlace && index >= 0) {
         const nextSel = s.selectionReagents.slice();
         nextSel.splice(index, 1);
         const nextSeq = s.sequenceReagents.concat([{ id, emoji }]);
@@ -73,16 +77,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     undo: () => {
       const s = get();
       if (s.sequenceReagents.length > s.sequenceElements.length - 1) {
-        // undo reagent
         const last = s.sequenceReagents[s.sequenceReagents.length - 1];
         const nextSelR = s.selectionReagents.concat([last]);
         const nextSeqR = s.sequenceReagents.slice(0, -1);
         const live = evaluatePartialSequence(s.sequenceElements, nextSeqR);
-        set({
-          selectionReagents: nextSelR,
-          sequenceReagents: nextSeqR,
-          liveEval: live,
-        });
+        set({ selectionReagents: nextSelR, sequenceReagents: nextSeqR, liveEval: live });
         return;
       }
       if (s.sequenceElements.length > 0) {
