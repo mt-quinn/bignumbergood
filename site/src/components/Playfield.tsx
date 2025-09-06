@@ -40,21 +40,25 @@ export function Playfield() {
         {/* Mobile: flex column; Desktop: grid */}
         <div className="h-full w-full flex flex-col lg:grid lg:grid-cols-[240px_1fr_200px] lg:grid-rows-1 gap-2 sm:gap-3 overflow-hidden">
           {/* Log */}
-          <aside className="order-3 lg:order-1 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 overflow-auto min-h-0">
+          <aside className="order-2 lg:order-1 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 overflow-auto min-h-0">
             <div className="text-xs uppercase text-gray-500 mb-2">Log</div>
-            <section className="mb-4">
-              <h2 className="text-xs uppercase text-gray-500 mb-1">Research</h2>
-              <div className="text-xs sm:text-sm font-mono space-y-1">
+            <section className="mb-3">
+              <h2 className="text-[11px] sm:text-xs uppercase tracking-wide text-gray-500 mb-1">Research</h2>
+              <div className="space-y-1">
                 {(phase !== "research" ? researchEval?.steps : liveEval?.steps)?.map((s, i) => (
-                  <div key={i}>{s.log}</div>
+                  <div key={i} className="text-xs sm:text-sm font-mono px-2 py-1 rounded bg-white/5 border border-white/10">
+                    {s.log}
+                  </div>
                 ))}
               </div>
             </section>
             <section>
-              <h2 className="text-xs uppercase text-gray-500 mb-1">Presentation</h2>
-              <div className="text-xs sm:text-sm font-mono space-y-1">
+              <h2 className="text-[11px] sm:text-xs uppercase tracking-wide text-gray-500 mb-1">Presentation</h2>
+              <div className="space-y-1">
                 {(phase === "presentation" ? liveEval?.steps : presentationEval?.steps)?.map((s, i) => (
-                  <div key={i}>{s.log}</div>
+                  <div key={i} className="text-xs sm:text-sm font-mono px-2 py-1 rounded bg-white/5 border border-white/10">
+                    {s.log}
+                  </div>
                 ))}
               </div>
             </section>
@@ -84,9 +88,8 @@ export function Playfield() {
           </main>
 
           {/* Gauge */}
-          <aside className="order-2 lg:order-3 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0 overflow-auto">
+          <aside className="order-3 lg:order-3 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0 overflow-auto">
             <div className="text-xs sm:text-sm uppercase text-gray-500 mb-1 sm:mb-2">Gauge</div>
-            <div className="text-lg sm:text-2xl font-semibold mb-1 sm:mb-2">{labelFor(finalSoFar)}</div>
             <div className="w-full">
               {/* Compact on mobile, full on lg */}
               <div className="block lg:hidden">
@@ -95,10 +98,6 @@ export function Playfield() {
               <div className="hidden lg:block">
                 <Gauge value={finalSoFar} />
               </div>
-            </div>
-            <div className="mt-auto text-center">
-              <div className="text-[10px] sm:text-xs text-gray-500">Final</div>
-              <div className="font-mono text-base sm:text-lg break-all">{finalSoFar.toString()}</div>
             </div>
           </aside>
         </div>

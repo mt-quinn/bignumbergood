@@ -8,8 +8,7 @@ export function Gauge({ value, compact = false }: { value: bigint; compact?: boo
 
   if (compact) {
     return (
-      <div className="w-full flex items-center justify-center gap-2 py-1">
-        <span className="text-xs text-gray-500">▲</span>
+      <div className="w-full flex items-center justify-center py-1">
         <span className="text-sm font-semibold">{GAUGE_LABELS[clamped]}</span>
       </div>
     );
