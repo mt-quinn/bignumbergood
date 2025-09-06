@@ -16,12 +16,12 @@ export function Playfield() {
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const desiredAspect = useMemo(() => {
     if (typeof window === "undefined") return 16 / 9;
-    return window.innerWidth >= 1024 ? 16 / 9 : 3 / 4; // desktop landscape, mobile portrait
+    return window.innerWidth >= 1024 ? 16 / 9 : 3 / 4;
   }, []);
   useEffect(() => {
     function update() {
-      const padding = 16; // tighter on mobile
-      const headerReserve = 72; // title area
+      const padding = 16;
+      const headerReserve = 72;
       const availW = Math.max(320, window.innerWidth - padding * 2);
       const availH = Math.max(420, window.innerHeight - headerReserve - padding * 2);
       const widthByHeight = availH * desiredAspect;
@@ -37,10 +37,10 @@ export function Playfield() {
   return (
     <div className="mx-auto" style={{ width: size?.width, height: size?.height }}>
       <div className="h-full w-full rounded-2xl border bg-gradient-to-b from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950 p-2 sm:p-4 overflow-hidden">
-        {/* Mobile-first single column; switch to 3 columns on lg */}
-        <div className="h-full w-full grid grid-rows-[1fr_auto_auto] lg:grid-rows-1 grid-cols-1 lg:grid-cols-[240px_1fr_200px] gap-2 sm:gap-3 overflow-hidden">
-          {/* Left: Log (mobile order 3) */}
-          <aside className="order-3 lg:order-1 h-full rounded-xl border bg-background/40 p-2 sm:p-3 overflow-auto min-h-0">
+        {/* Mobile: flex column; Desktop: grid */}
+        <div className="h-full w-full flex flex-col lg:grid lg:grid-cols-[240px_1fr_200px] lg:grid-rows-1 gap-2 sm:gap-3 overflow-hidden">
+          {/* Log */}
+          <aside className="order-3 lg:order-1 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 overflow-auto min-h-0">
             <div className="text-xs uppercase text-gray-500 mb-2">Log</div>
             <section className="mb-4">
               <h2 className="text-xs uppercase text-gray-500 mb-1">Research</h2>
@@ -60,14 +60,14 @@ export function Playfield() {
             </section>
           </aside>
 
-          {/* Center: Play area (mobile order 1) */}
-          <main className="order-1 lg:order-2 h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col min-h-0">
+          {/* Play area */}
+          <main className="order-1 lg:order-2 flex-1 rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col min-h-0 overflow-hidden">
             <div className="text-xs sm:text-sm text-gray-500 mb-2 text-center lg:text-left">Seed: <span className="font-mono">{daily.seed}</span> — Phase: {phase}</div>
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 overflow-auto">
               <Crucible />
             </div>
             <div className="mt-2 sm:mt-3 flex gap-2 justify-center">
-              <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm">Undo</button>
+              <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm" onClick={actions.undo}>Undo</button>
               {phase === "research" && (
                 <button className="px-4 py-2 rounded border bg-white/70 hover:bg-white transition text-sm" onClick={actions.finalizeResearch}>Finish Research</button>
               )}
@@ -83,8 +83,8 @@ export function Playfield() {
             </div>
           </main>
 
-          {/* Right: Gauge (mobile order 2, compact) */}
-          <aside className="order-2 lg:order-3 h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0">
+          {/* Gauge */}
+          <aside className="order-2 lg:order-3 h-auto lg:h-full rounded-xl border bg-background/40 p-2 sm:p-3 flex flex-col items-center min-h-0 overflow-auto">
             <div className="text-xs sm:text-sm uppercase text-gray-500 mb-1 sm:mb-2">Gauge</div>
             <div className="text-lg sm:text-2xl font-semibold mb-1 sm:mb-2">{labelFor(finalSoFar)}</div>
             <div className="w-full max-h-40 sm:max-h-none">
